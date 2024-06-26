@@ -21,9 +21,3 @@ class InstanceOperation(Enum):
 class InstanceStatus(NamedTuple):
     status: str = ''
     description: str = 'empty status'
-
-
-class InstanceAlertHandle(NamedTuple):
-    send_notify: bool = True
-    operation: InstanceOperation = InstanceOperation.NONE
-    continue_monitor: bool = True
