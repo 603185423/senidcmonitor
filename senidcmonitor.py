@@ -1,4 +1,6 @@
+import random
 import threading
+import time
 
 import requests
 import http.client
@@ -76,6 +78,7 @@ class SenidcInstance:
         return url
 
     def operate_instance(self, instance_operation: str) -> InstanceStatus:
+        time.sleep(random.uniform(0, 2))
         global config
         headers = {
             'Content-type': 'application/x-www-form-urlencoded',
