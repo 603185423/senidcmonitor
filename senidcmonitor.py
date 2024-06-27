@@ -130,11 +130,14 @@ class SenidcInstanceChecker(SenidcInstance):
         self.timer.start()
 
     def _check(self):
-        self.update_status()
-        if self.status.status != 'on':
-            self._default_alert()
-            if not self.on_alert.continue_monitor:
-                return
+        try:
+            self.update_status()
+            if self.status.status != 'on':
+                self._default_alert()
+                if not self.on_alert.continue_monitor:
+                    return
+        except Exception as e:
+            log.exception("网络异常")
         self.start_monitor()
 
     def _default_alert(self):
