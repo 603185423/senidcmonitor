@@ -112,7 +112,7 @@ class SenidcInstance:
         log.debug(f"更新实例 {self.machine_id} 状态 {self.status}")
         if self.last_status.status != self.status.status:
             log.info(f"实例 {self.machine_id} 状态变更: {self.last_status.status} -> {self.status.status}")
-            if self.last_status.status and config.preference.notify_on_instanceStatusChanged:
+            if self.last_status.status and config.preference.notify_on_instanceStatusChanged and self.status.status != 'unknown' and self.last_status.status != 'unknown':
                 send_notification("Senidc-Instance",
                                   f"实例 {self.machine_id} 状态变更: {self.last_status.status} -> {self.status.status}")
         return self.status
