@@ -146,7 +146,7 @@ class SenidcInstanceChecker(SenidcInstance):
     def _default_alert(self):
         # 默认的异常处理策略
         log.info(f"Instance {self.machine_id} is down: {self.status.description}")
-        if self.on_alert.send_notify:
+        if self.on_alert.send_notify and self.status.status != 'unknown':
             send_notification("Senidc-Instance Alert", f"Instance {self.machine_id} is down: {self.status.description}")
         if self.status.status == 'off' or self.status.status == 'hangup':
             self.operate_instance(self.on_alert.operation)
