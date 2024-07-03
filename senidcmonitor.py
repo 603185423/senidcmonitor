@@ -129,6 +129,8 @@ class SenidcInstanceChecker(SenidcInstance):
         interval = self.monitor_interval
         if self.status.status != 'on':
             interval = 10
+        if self.status.status != 'unknown':
+            interval = 30
         self.timer = threading.Timer(interval, self._check)
         self.timer.start()
 
