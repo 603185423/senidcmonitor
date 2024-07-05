@@ -1,5 +1,15 @@
 # senidcmonitor
 
+需要python >= 3.10 (也许)
+
+```bash
+git clone https://github.com/603185423/senidcmonitor.git
+cd senidcmonitor
+pip install -r requirements.txt
+pythion test.py
+```
+
+
 ## 配置文件说明
 
 配置文件 `config.yaml` 包含以下几个部分：
