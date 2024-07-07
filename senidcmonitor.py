@@ -150,5 +150,5 @@ class SenidcInstanceChecker(SenidcInstance):
         log.info(f"Instance {self.machine_id} is down: {self.status.description}")
         if self.on_alert.send_notify and self.status.status != 'unknown':
             send_notification("Senidc-Instance Alert", f"Instance {self.machine_id} is down: {self.status.description}")
-        if self.status.status == 'off' or self.status.status == 'hangup':
+        if self.status.status == 'off' or self.status.status == 'paused':
             self.operate_instance(self.on_alert.operation)
