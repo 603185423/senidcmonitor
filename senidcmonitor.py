@@ -23,7 +23,7 @@ def update_cookie(payload):
     host = "www.senidc.cn"
     url = "/login?action=phone"
     params = urllib.parse.urlencode(payload)
-    connection = http.client.HTTPConnection(host)
+    connection = http.client.HTTPSConnection(host)
     headers = {'Content-type': 'application/x-www-form-urlencoded'}
     connection.request("POST", url, params, headers)
 
