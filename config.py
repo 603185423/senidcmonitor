@@ -29,6 +29,7 @@ class InstanceAlertHandle(BaseModel):
 class SenidcInstanceConfig(BaseModel):
     machine_id: int = -1
     monitor_interval: int = 5 * 60
+    mosaic_id: str = '***1'
     alert_handle: InstanceAlertHandle = InstanceAlertHandle()
 
 
@@ -41,6 +42,7 @@ class Account(BaseModel):
 class Preference(BaseModel):
     notify_on_instanceStatusChanged: bool = True
     serverchan_url: str = ""
+    use_mosaic_id: bool = True
 
 
 class Config(BaseModel):
