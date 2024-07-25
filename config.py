@@ -20,6 +20,19 @@ CONFIG_PATH = DATA_PATH / "config.yaml" if os.getenv("MIUITASK_CONFIG_PATH") is 
 """数据文件默认路径"""
 
 
+class ServerChan(BaseModel):
+    default_title: str = "Senidc"
+    notify: bool = True
+    serverchan_url: str = ""
+    merge_message: bool = False
+
+
+class UptimeKuma(BaseModel):
+    url: str = "http://000.000.000.000:0000"
+    token: str = "xXxXxXxXx"
+    interval: int = -1
+
+
 class InstanceAlertHandle(BaseModel):
     send_notify: bool = True
     operation: str = InstanceOperation.NONE.value
@@ -41,8 +54,9 @@ class Account(BaseModel):
 
 class Preference(BaseModel):
     notify_on_instanceStatusChanged: bool = True
-    serverchan_url: str = ""
     use_mosaic_id: bool = True
+    serverchan: ServerChan = ServerChan()
+    uptime_kuma: UptimeKuma = UptimeKuma()
 
 
 class Config(BaseModel):
