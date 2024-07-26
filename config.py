@@ -50,6 +50,7 @@ class Account(BaseModel):
     phone: str = "13300001111"
     password: str = "<PASSWORD>"
     cookies: Dict = {}
+    last_sign_in: int = 0
 
 
 class Preference(BaseModel):
@@ -57,6 +58,7 @@ class Preference(BaseModel):
     use_mosaic_id: bool = True
     serverchan: ServerChan = ServerChan()
     uptime_kuma: UptimeKuma = UptimeKuma()
+    enable_sign_in: bool = True
 
 
 class Config(BaseModel):

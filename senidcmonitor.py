@@ -1,6 +1,8 @@
+import json
 import random
 import threading
 import time
+import datetime
 
 import requests
 import http.client
@@ -17,6 +19,12 @@ from data_model import InstanceStatus, InstanceOperation, UrlPath
 from notify import send_notification
 
 config = ConfigManager().data_obj
+
+
+def is_today(timestamp) -> bool:
+    today = datetime.date.today()
+    date_of_timestamp = datetime.datetime.fromtimestamp(timestamp).date()
+    return date_of_timestamp == today
 
 
 def update_cookie(payload):
@@ -47,6 +55,54 @@ def update_cookie(payload):
         raise Exception("Expected cookie pattern not found in Set-Cookie header")
 
     return match[0]
+
+
+def sign_in() -> str:
+    host = "www.senidc.cn"
+    url = "/addons?_plugin=points_mall&_controller=index&_action=sign"
+    connection = http.client.HTTPSConnection(host)
+    headers = {
+        'Content-type': 'application/x-www-form-urlencoded',
+        'Cookie': generate_cookie_string(config.account.cookies),
+        'X-Requested-With': 'XMLHttpRequest',
+    }
+    connection.request("POST", url, None, headers)
+
+    response = connection.getresponse()
+    log.debug(f"Status Code: {response.status}")
+    notify_msg = ''
+    if response.status == 200:
+        response_body = response.read().decode()
+
+        msg = json.loads(response_body)['msg']
+        if "成功" in response_body:
+            notify_msg = f"签到成功, {msg}"
+            config.account.last_sign_in = datetime.datetime.now()
+            write_plugin_data()
+        else:
+            notify_msg = f"签到失败, {msg}"
+            if "已经" in response_body:
+                config.account.last_sign_in = datetime.datetime.now()
+                write_plugin_data()
+        log.info(notify_msg)
+    else:
+        notify_msg = f"签到失败，状态码: {response.status}"
+        log.error(notify_msg)
+    return notify_msg
+
+
+def check_and_sign_in():
+    if not config.preference.enable_sign_in:
+        return
+    if is_today(config.account.last_sign_in):
+        return
+    notify_msg = ''
+    try:
+        notify_msg = sign_in()
+    except Exception as e:
+        notify_msg = "签到异常"
+        log.exception("签到异常")
+    send_notification("Senidc-Sign_in", notify_msg)
 
 
 def generate_cookie_string(cookies):
@@ -101,6 +157,8 @@ class SenidcInstance:
                 # 重新尝试请求
                 headers['Cookie'] = f"{new_cookie_name}={new_cookie_value}"
                 response = self.session.post(self.build_url(UrlPath.DEFAULT), headers=headers, data=data)
+            # 更新cookie后尝试签到
+            check_and_sign_in()
         if instance_operation != InstanceOperation.STATUS.value:
             return self.update_status()
         else:
@@ -121,7 +179,8 @@ class SenidcInstance:
 
 class SenidcInstanceChecker(SenidcInstance):
     def __init__(self, senidc_instance_config: SenidcInstanceConfig):
-        super().__init__(senidc_instance_config.machine_id, senidc_instance_config.mosaic_id if config.preference.use_mosaic_id else None)
+        super().__init__(senidc_instance_config.machine_id,
+                         senidc_instance_config.mosaic_id if config.preference.use_mosaic_id else None)
         self.monitor_interval = senidc_instance_config.monitor_interval  # 监控间隔，单位秒
         self.timer: [threading.Timer, None] = None
         self.on_alert = senidc_instance_config.alert_handle  # 异常处理函数
