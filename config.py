@@ -50,7 +50,7 @@ class Account(BaseModel):
     phone: str = "13300001111"
     password: str = "<PASSWORD>"
     cookies: Dict = {}
-    last_sign_in: str = ''
+    last_sign_in: float = 0.0
 
 
 class Preference(BaseModel):

@@ -77,12 +77,12 @@ def sign_in() -> str:
         msg = json.loads(response_body)['msg']
         if "成功" in response_body:
             notify_msg = f"签到成功, {msg}"
-            config.account.last_sign_in = datetime.datetime.now()
+            config.account.last_sign_in = datetime.datetime.now().timestamp()
             write_plugin_data()
         else:
             notify_msg = f"签到失败, {msg}"
             if "已经" in response_body:
-                config.account.last_sign_in = datetime.datetime.now()
+                config.account.last_sign_in = datetime.datetime.now().timestamp()
                 write_plugin_data()
         log.info(notify_msg)
     else:
